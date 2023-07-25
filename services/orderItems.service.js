@@ -1,4 +1,4 @@
-const OrderItemRepository = require("../repositories/items.repository");
+const OrderItemRepository = require("../repositories/orderItems.repository");
 
 class OrderItemService {
   orderItemRepository = new OrderItemRepository();
@@ -14,12 +14,12 @@ class OrderItemService {
   };
 
   updateOrderItem = async (id, state) => {
-    await this.itemRepository.updateItem(id, state);
+    await this.orderItemRepository.updateItem(id, state);
     const updateOrderItem = await this.orderItemRepository.findOrderItemById(
       id
     );
 
-    return updateOrderItem;
+    if (state == "completed") return updateOrderItem;
   };
 }
 
