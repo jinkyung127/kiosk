@@ -4,10 +4,9 @@ class OrderItemsController {
   orderItemService = new OrderItemService();
 
   createOrderItem = async (req, res, next) => {
-    const { itemId } = req.params;
-    const { state } = req.body;
+    const { itemId, amount, state } = req.body;
     try {
-      const createOrderItemData = await this.OrderItemService.createOrderItem(
+      const createOrderItemData = await this.orderItemService.createOrderItem(
         itemId,
         amount,
         state

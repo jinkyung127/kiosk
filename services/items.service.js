@@ -46,6 +46,10 @@ class ItemService {
 
     return updatedItem;
   };
+
+  updateItemAmount = async (itemId, amount) => {
+    await itemRepository.updateItemAmount(itemId, amount);
+  };
 }
 
 module.exports = ItemService;

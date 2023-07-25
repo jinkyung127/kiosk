@@ -44,6 +44,10 @@ class ItemRepository {
 
     return updateItemData;
   };
+
+  async updateItemAmount(itemId, amount) {
+    await Items.update({ amount }, { where: { id: itemId } });
+  }
 }
 
 module.exports = ItemRepository;
