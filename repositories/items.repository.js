@@ -45,9 +45,33 @@ class ItemRepository {
     return updateItemData;
   };
 
-  async updateItemAmount(itemId, amount) {
-    await Items.update({ amount }, { where: { id: itemId } });
-  }
+  updateItemAmount = async (itemId, amount) => {
+    const item = await Items.findOne({ where: { id: itemId } });
+
+    if (!item) {
+      throw new Error("해당하는 상품이 없습니다");
+    }
+
+    // 현재 수량에 추가 발주량을 더하여 업데이트
+    const updatedAmount = item.amount + amount;
+    await Items.update({ amount: updatedAmount }, { where: { id: itemId } });
+  };
+
+  cancelItemAmount = async (itemId, amount) => {
+    const item = await Items.findOne({ where: { id: itemId } });
+
+    if (!item) {
+      throw new Error("해당하는 상품이 없습니다");
+    }
+
+    // 현재 수량에서 발주량만큼 차감하여 업데이트
+    const updatedAmount = item.amount - amount;
+    if (item.amount < amount) {
+      throw new Error("재고가 부족해 발주를 취소할 수 없습니다");
+    } else {
+      await Items.update({ amount: updatedAmount }, { where: { id: itemId } });
+    }
+  };
 }
 
 module.exports = ItemRepository;
