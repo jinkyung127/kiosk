@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.OrderItems, {
+      this.hasMany(models.OrderCustomers, {
         sourceKey: "id",
         foreignKey: "orderCustomerId",
       });
@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       state: {
         allowNull: false,
         type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
