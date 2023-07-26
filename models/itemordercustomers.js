@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Items extends Model {
+  class ItemOrderCustomers extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,18 +9,18 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.OrderItems, {
-        sourceKey: "id",
+      this.belongsTo(models.Items, {
+        targetKey: "id",
         foreignKey: "itemId",
       });
 
-      this.hasOne(models.ItemOrderCustomers, {
-        sourceKey: "id",
-        foreignKey: "itemId",
+      this.belongsTo(models.OrderCustomers, {
+        targetKey: "id",
+        foreignKey: "orderCustomerId",
       });
     }
   }
-  Items.init(
+  ItemOrderCustomers.init(
     {
       id: {
         allowNull: false,
@@ -28,43 +28,22 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      name: {
-        allowNull: false,
-        type: DataTypes.STRING,
-      },
-      optionId: {
-        allowNull: true,
-        type: DataTypes.INTEGER,
-      },
-      price: {
+      itemId: {
         allowNull: false,
         type: DataTypes.INTEGER,
       },
-      type: {
+      orderCustomerId: {
         allowNull: false,
-        type: DataTypes.ENUM,
-        values: ["coffee", "juice", "food"],
+        type: DataTypes.INTEGER,
       },
       amount: {
-        allowNull: false,
         type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
-      createdAt: {
-        allowNull: false,
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
       },
     },
     {
       sequelize,
-      modelName: "Items",
+      modelName: "ItemOrderCustomers",
     }
   );
-  return Items;
+  return ItemOrderCustomers;
 };
