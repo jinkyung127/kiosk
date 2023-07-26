@@ -27,7 +27,10 @@ class OrderItemService {
       state === "CANCELED"
     ) {
       return this.orderItemRepository.updateOrderItem(id, state);
-    } else if (prevState === "PENDING" && state === "COMPLETED") {
+    } else if (
+      (prevState === "ORDERED" || prevState === "PENDING") &&
+      state === "COMPLETED"
+    ) {
       const t = await sequelize.transaction();
       try {
         // 발주 정보 업데이트
