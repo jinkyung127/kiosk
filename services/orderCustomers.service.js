@@ -81,39 +81,35 @@ class OrderCustomerService {
   };
 
   // 주문 취소 메서드
-  // cancelOrder = async (orderCustomerId) => {
-  //   // 트랜잭션 시작
-  //   const t = await sequelize.transaction();
+  cancelOrder = async (id) => {
+    const orderCustomer =
+      await this.orderCustomerRepository.getOrderCustomerById(id);
 
-  //   try {
-  //     // 주문 사용자 데이터 조회
-  //     const orderCustomer =
-  //       await this.orderCustomerRepository.getOrderCustomerById(
-  //         orderCustomerId
-  //       );
+    if (orderCustomer.state === true) {
+      throw new Error("완료된 주문은 취소할 수 없습니다.");
+    }
 
-  //     // 주문이 이미 완료된 경우 에러 발생
-  //     if (orderCustomer.state === true) {
-  //       throw new Error("완료된 주문은 취소할 수 없습니다.");
-  //     }
+    const t = await sequelize.transaction();
 
-  //     // 주문 사용자와 관련된 데이터 삭제
-  //     await this.orderCustomerRepository.deleteOrderCustomer(orderCustomerId, {
-  //       transaction: t,
-  //     });
-  //     await this.itemOrderCustomerRepository.deleteItemsByOrderCustomerId(
-  //       orderCustomerId,
-  //       { transaction: t }
-  //     );
+    try {
+      const orderItems =
+        await this.itemOrderCustomerRepository.getItemsByOrderCustomerId(id);
 
-  //     // 트랜잭션 커밋
-  //     await t.commit();
-  //   } catch (error) {
-  //     // 트랜잭션 롤백
-  //     await t.rollback();
-  //     throw error;
-  //   }
-  // };
+      await this.itemOrderCustomerRepository.deleteItemOrderCustomersByOrderCustomerId(
+        id,
+        t
+      );
+
+      await this.orderCustomerRepository.deleteOrderCustomer(id, t);
+
+      await t.commit();
+
+      return "주문이 취소되었습니다.";
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
+  };
 }
 
 module.exports = OrderCustomerService;

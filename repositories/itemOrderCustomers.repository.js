@@ -16,11 +16,15 @@ class ItemOrderCustomerRepository {
     return orderItems;
   };
 
-  // deleteItemsByOrderCustomerId = async (orderCustomerId) => {
-  //   await ItemOrderCustomers.destroy({
-  //     where: { orderCustomerId },
-  //   });
-  // };
+  deleteItemOrderCustomersByOrderCustomerId = async (
+    orderCustomerId,
+    transaction
+  ) => {
+    await ItemOrderCustomers.destroy({
+      where: { orderCustomerId },
+      transaction,
+    });
+  };
 }
 
 module.exports = ItemOrderCustomerRepository;

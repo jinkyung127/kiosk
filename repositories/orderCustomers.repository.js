@@ -24,9 +24,12 @@ class OrderCustomerRepository {
     );
   };
 
-  // deleteOrderCustomer = async (orderId) => {
-  //   await OrderCustomers.destroy({ where: { id: orderId } });
-  // };
+  deleteOrderCustomer = async (id, transaction) => {
+    await OrderCustomers.destroy({
+      where: { id },
+      transaction,
+    });
+  };
 }
 
 module.exports = OrderCustomerRepository;
