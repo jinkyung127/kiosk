@@ -6,11 +6,11 @@ class OrderCustomersController {
   createOrderCustomer = async (req, res, next) => {
     const { customerId, orderItems } = req.body;
     try {
-      const totalAmount = await this.orderCustomerService.createOrderCustomer(
+      await this.orderCustomerService.createOrderCustomer(
         customerId,
         orderItems
       );
-      res.status(201).json({ totalAmount });
+      res.status(201).json({ message: "주문완료처리되었습니다" });
     } catch (error) {
       res.status(401).json({ message: error.message });
     }
@@ -21,10 +21,13 @@ class OrderCustomersController {
     const { id } = req.params;
     try {
       // 주문 완료 작업을 수행하는 서비스 메서드 호출
-      const totalAmount = await this.orderCustomerService.completeOrder(id);
+      await this.orderCustomerService.completeOrder(id);
 
-      res.status(200).json({ totalAmount });
+      res.status(200).json({ message: "주문완료처리되었습니다" });
     } catch (error) {
+      // 에러 발생 시 에러 메시지를 응답으로 반환
+      console.log(error);
+
       res.status(400).json({ message: error.message });
     }
   };

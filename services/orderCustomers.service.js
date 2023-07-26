@@ -1,11 +1,13 @@
 const OrderCustomerRepository = require("../repositories/orderCustomers.repository");
 const ItemOrderCustomerRepository = require("../repositories/itemOrderCustomers.repository");
+const ItemRepository = require("../repositories/items.repository");
 const { Items } = require("../models");
 const { sequelize } = require("../models");
 
 class OrderCustomerService {
   orderCustomerRepository = new OrderCustomerRepository();
   itemOrderCustomerRepository = new ItemOrderCustomerRepository();
+  itemRepository = new ItemRepository();
 
   createOrderCustomer = async (customerId, orderItems) => {
     let totalAmount = 0;
@@ -39,35 +41,38 @@ class OrderCustomerService {
 
   // 주문 완료 메서드
   completeOrder = async (id) => {
+    // 주문 정보 가져오기
+    const orderCustomer =
+      await this.orderCustomerRepository.getOrderCustomerById(id);
+    console.log(orderCustomer);
+
+    // 이미 주문이 완료된 경우 에러 발생
+    if (orderCustomer.state === true) {
+      throw new Error("이미완료처리된 주문입니다");
+    }
+
     // 트랜잭션 시작
     const t = await sequelize.transaction();
 
     try {
-      // 주문 사용자의 상태(state)를 true로 변경
-      await this.orderCustomerRepository.updateOrderCustomerState(id);
+      // order_customer의 상태를 true로 업데이트
+      await this.orderCustomerRepository.updateOrderCustomerState(id, t);
 
-      // 주문한 상품들의 재고 감소 작업
+      // 주문 고객과 관련된 주문 상품들을 가져옴
       const orderItems =
         await this.itemOrderCustomerRepository.getItemsByOrderCustomerId(id);
 
+      // 상품 수량 업데이트 및 트랜잭션 커밋
       for (const orderItem of orderItems) {
         const { itemId, amount } = orderItem;
 
-        const item = await Items.findByPk(itemId, { transaction: t });
-
-        item.amount -= amount;
-        await item.save({ transaction: t });
+        await this.itemRepository.updateItemAmount(itemId, -amount, t);
       }
 
       // 트랜잭션 커밋
       await t.commit();
 
-      // 주문한 상품들의 총 가격을 계산하여 반환
-      const totalAmount = orderItems.reduce(
-        (sum, item) => sum + item.price * item.amount,
-        0
-      );
-      return totalAmount;
+      return "주문완료처리되었습니다";
     } catch (error) {
       // 트랜잭션 롤백
       await t.rollback();
