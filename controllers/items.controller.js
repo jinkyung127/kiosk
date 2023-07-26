@@ -4,12 +4,13 @@ class ItemsController {
   itemService = new ItemService();
 
   createItem = async (req, res, next) => {
-    const { name, price, type } = req.body;
+    const { name, price, type, optionId } = req.body;
     try {
       const createItemData = await this.itemService.createItem(
         name,
         price,
-        type
+        type,
+        optionId
       );
 
       res.status(201).json({ data: createItemData });

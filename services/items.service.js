@@ -3,11 +3,12 @@ const ItemRepository = require("../repositories/items.repository");
 class ItemService {
   itemRepository = new ItemRepository();
 
-  createItem = async (name, price, type) => {
+  createItem = async (name, price, type, optionId) => {
     const createItemData = await this.itemRepository.createItem(
       name,
       price,
-      type
+      type,
+      optionId
     );
     if (!name) {
       throw new Error("상품 이름을 입력하세요");
