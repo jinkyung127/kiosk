@@ -18,7 +18,7 @@ async function cacheOptionData() {
 cacheOptionData();
 
 // 일정 주기마다 옵션 데이터를 캐시 업데이트
-const cacheUpdateInterval = 60 * 60 * 1000; // 1시간마다 업데이트
+const cacheUpdateInterval = 10 * 1000; // 1시간마다 업데이트
 setInterval(cacheOptionData, cacheUpdateInterval);
 
 // 옵션 데이터를 가져오는 함수
