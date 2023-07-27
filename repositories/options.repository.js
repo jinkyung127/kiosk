@@ -18,6 +18,11 @@ class OptionRepository {
 
     return deleteOptionData;
   };
+
+  getOptionById = async (optionId) => {
+    const option = await Options.findByPk(optionId);
+    return option;
+  };
 }
 
 module.exports = OptionRepository;

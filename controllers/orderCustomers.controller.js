@@ -6,12 +6,15 @@ class OrderCustomersController {
   createOrderCustomer = async (req, res, next) => {
     const { customerId, orderItems } = req.body;
     try {
-      await this.orderCustomerService.createOrderCustomer(
-        customerId,
-        orderItems
-      );
-      res.status(201).json({ message: "주문되었습니다" });
+      const { orderId, totalPrice } =
+        await this.orderCustomerService.createOrderCustomer(
+          customerId,
+          orderItems
+        );
+      res.status(201).json({ orderId, totalPrice });
     } catch (error) {
+      console.log(error);
+
       res.status(401).json({ message: error.message });
     }
   };

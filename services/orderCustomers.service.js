@@ -1,13 +1,15 @@
 const OrderCustomerRepository = require("../repositories/orderCustomers.repository");
 const ItemOrderCustomerRepository = require("../repositories/itemOrderCustomers.repository");
 const ItemRepository = require("../repositories/items.repository");
-const { Items } = require("../models");
+const OptionRepository = require("../repositories/options.repository");
+const { Items, Options } = require("../models");
 const { sequelize } = require("../models");
 
 class OrderCustomerService {
   orderCustomerRepository = new OrderCustomerRepository();
   itemOrderCustomerRepository = new ItemOrderCustomerRepository();
   itemRepository = new ItemRepository();
+  optionRepository = new OptionRepository();
 
   createOrderCustomer = async (customerId, orderItems) => {
     let totalAmount = 0;
@@ -15,20 +17,41 @@ class OrderCustomerService {
       await this.orderCustomerRepository.createOrderCustomer();
 
     for (const orderItem of orderItems) {
-      const { itemId, amount } = orderItem;
+      const { itemId, amount, optionChoices } = orderItem;
 
-      const item = await Items.findByPk(itemId);
+      const item = await Items.findByPk(itemId, { include: [Options] });
 
       if (!item) {
         throw new Error("해당하는 상품이 없습니다.");
       }
 
-      totalAmount += item.price * amount;
+      // 기본 상품 가격
+      let itemPrice = item.price * amount;
+
+      // 옵션 가격 추가
+      let optionPrice = 0;
+      if (optionChoices && optionChoices.length > 0) {
+        for (const optionChoice of optionChoices) {
+          switch (optionChoice) {
+            case "extra_price":
+              optionPrice += item.Option.extra_price;
+              break;
+            case "shot_price":
+              optionPrice += item.Option.shot_price;
+              break;
+            default:
+              break;
+          }
+        }
+      }
+
+      totalAmount += itemPrice + optionPrice;
 
       const itemOrderCustomerData = {
         itemId: itemId,
         orderCustomerId: createdOrderCustomer.id,
         amount: amount,
+        optionChoices: optionChoices,
       };
 
       await this.itemOrderCustomerRepository.createItemOrderCustomer(
@@ -36,9 +59,8 @@ class OrderCustomerService {
       );
     }
 
-    return totalAmount;
+    return { orderId: createdOrderCustomer.id, totalPrice: totalAmount };
   };
-
   // 주문 완료 메서드
   completeOrder = async (id) => {
     // 주문 정보 가져오기
