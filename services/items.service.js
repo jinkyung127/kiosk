@@ -1,4 +1,5 @@
 const ItemRepository = require("../repositories/items.repository");
+const { getOptionData } = require("../routeCache");
 
 class ItemService {
   itemRepository = new ItemRepository();
@@ -22,13 +23,23 @@ class ItemService {
   };
 
   findAllItem = async () => {
-    const allItem = await this.itemRepository.findAllItem();
+    const allItems = await this.itemRepository.findAllItem();
+    const optionData = await getOptionData();
 
-    allItem.sort((a, b) => {
-      return b.createdAt - a.createdAt;
-    });
+    const mapItemWithOption = (item, options) => {
+      const optionId = item.optionId;
+      const optionInfo = options.find((opt) => opt.dataValues.id === optionId);
+      return {
+        ...item.dataValues,
+        optionInfo: optionInfo ? optionInfo.dataValues : {},
+      };
+    };
 
-    return allItem;
+    const itemsWithOptionInfo = allItems.map((item) =>
+      mapItemWithOption(item, optionData)
+    );
+
+    return itemsWithOptionInfo;
   };
 
   findItemsByType = async (type) => {
