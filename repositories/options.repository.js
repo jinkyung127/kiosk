@@ -10,6 +10,14 @@ class OptionRepository {
 
     return createOptionData;
   };
+
+  deleteOption = async (id) => {
+    const deleteOptionData = await Options.destroy({
+      where: { id },
+    });
+
+    return deleteOptionData;
+  };
 }
 
 module.exports = OptionRepository;

@@ -41,8 +41,8 @@ class ItemService {
     return true;
   };
 
-  updateItem = async (id, name, price, type) => {
-    await this.itemRepository.updateItem(id, name, price, type);
+  updateItem = async (id, name, price, type, optionId) => {
+    await this.itemRepository.updateItem(id, name, price, type, optionId);
     const updatedItem = await this.itemRepository.findItemById(id);
 
     return updatedItem;

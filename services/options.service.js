@@ -23,6 +23,11 @@ class OptionService {
       // res.status(500).json({ message: "서버 에러" });
     }
   };
+
+  deleteOption = async (id) => {
+    await this.optionRepository.deleteOption(id);
+    return true;
+  };
 }
 
 module.exports = OptionService;

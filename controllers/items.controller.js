@@ -44,13 +44,14 @@ class ItemsController {
 
   updateItem = async (req, res, next) => {
     const { id } = req.params;
-    const { name, price, type } = req.body;
+    const { name, price, type, optionId } = req.body;
     try {
       const updatedItem = await this.itemService.updateItem(
         id,
         name,
         price,
-        type
+        type,
+        optionId
       );
       res.status(200).json({ data: updatedItem });
     } catch (error) {

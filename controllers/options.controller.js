@@ -17,6 +17,17 @@ class OptionsController {
       res.status(401).json({ message: error.message });
     }
   };
+
+  deleteOption = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const deleteOption = await this.optionService.deleteOption(id);
+
+      res.status(200).json({ message: "상품 삭제 성공." });
+    } catch (error) {
+      res.status(401).json({ message: error.message });
+    }
+  };
 }
 
 module.exports = OptionsController;

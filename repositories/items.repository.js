@@ -37,9 +37,9 @@ class ItemRepository {
     return deleteItemData;
   };
 
-  updateItem = async (id, name, price, type) => {
+  updateItem = async (id, name, price, type, optionId) => {
     const updateItemData = await Items.update(
-      { name, price, type },
+      { name, price, type, optionId },
       { where: { id: Number(id) } }
     );
 

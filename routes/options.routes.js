@@ -16,4 +16,6 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.delete("/:id", optionsController.deleteOption);
+
 module.exports = router;
